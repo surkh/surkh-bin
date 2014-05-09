@@ -3,9 +3,15 @@
 # Based ond gup found at http://jasoncodes.com/posts/gup-git-rebase
 # (also https://github.com/jasoncodes/dotfiles)
 #
-    set -e # fail immediately if there's a problem
-    # use `git-up` if installed
 
+
+
+
+
+    set -e # fail immediately if there's a problem
+
+
+    # use `git-up` if installed
     if type git-up > /dev/null 2>&1
     then
       exec git-up
@@ -64,7 +70,7 @@
       # restore any stashed changes
       if [ "$HAVE_STASH" -ne 0 ]
       then
-        git stash pop --quiet
+        git stash pop
       fi
 
     fi
