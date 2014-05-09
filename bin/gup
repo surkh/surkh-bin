@@ -3,12 +3,9 @@
 # Based ond gup found at http://jasoncodes.com/posts/gup-git-rebase
 # (also https://github.com/jasoncodes/dotfiles)
 #
-
-
     set -e # fail immediately if there's a problem
-
-
     # use `git-up` if installed
+
     if type git-up > /dev/null 2>&1
     then
       exec git-up
