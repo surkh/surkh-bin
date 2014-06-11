@@ -1,0 +1,3 @@
+git config --global alias.uncommit 'reset HEAD^'
+git config --global alias.current-branch 'rev-parse --abbrev-ref HEAD'
+
