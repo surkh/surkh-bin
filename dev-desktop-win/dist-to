@@ -1,0 +1,6 @@
+export REPOSITORY=`pwd | grep -o '\(serenity\)\|\(firefly\)'`
+echo $REPOSITORY
+
+ssh -t sniazi "dist-to $REPOSITORY $1"
+ssh -t $1 "~/install-serenity-tpkg"
+

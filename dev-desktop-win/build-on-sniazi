@@ -1,0 +1,6 @@
+export CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)  
+echo $CURRENT_BRANCH
+export REPOSITORY=`pwd | grep -o '\(serenity\)\|\(firefly\)\|\(sentinel\)'`
+echo $REPOSITORY
+
+ssh -t 10.45.10.182 "build-from-git $REPOSITORY ${CURRENT_BRANCH} ${1}"

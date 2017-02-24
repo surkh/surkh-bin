@@ -1,0 +1,1 @@
+ssh -t 10.45.10.182 "deploy-updater np407.wc1.yellowpages.com "

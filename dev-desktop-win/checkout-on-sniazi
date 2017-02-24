@@ -1,0 +1,8 @@
+export CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+git push sniazi +$CURRENT_BRANCH
+echo $CURRENT_BRANCH
+
+export REPOSITORY=`pwd | grep -o '\(serenity\)\|\(firefly\)'`
+echo $REPOSITORY
+
+ssh -t 10.45.10.182 "checkout-in-git $REPOSITORY ${CURRENT_BRANCH}"

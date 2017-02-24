@@ -1,0 +1,16 @@
+set -e 
+
+export REPOSITORY=`pwd | grep -o '\(serenity\)\|\(firefly\)\|\(sentinel\)\|\(janus\)'`
+echo Repo: $REPOSITORY
+
+export CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)  
+echo Branch: $CURRENT_BRANCH
+
+git push --force dev-sniazi $CURRENT_BRANCH
+
+if [ "$1" != "push" ]; then
+   ssh -t dev-sniazi.np.wc1.yellowpages.com "build-and-deploy-from-git $REPOSITORY ${CURRENT_BRANCH} ${1}"
+fi
+
+
+

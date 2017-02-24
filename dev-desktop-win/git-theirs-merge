@@ -1,0 +1,1 @@
+git merge $( git commit-tree $1^{tree} -p $( git rev-parse --abbrev-ref HEAD ) -p $1 -m "Setting back to $1" )

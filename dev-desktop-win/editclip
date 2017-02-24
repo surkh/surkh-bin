@@ -1,0 +1,5 @@
+cat /dev/clipboard > /tmp/clipboard
+vim /tmp/clipboard
+cat /tmp/clipboard > /dev/clipboard
+rm /tmp/clipboard
+

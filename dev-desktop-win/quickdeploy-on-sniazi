@@ -1,0 +1,4 @@
+export REPOSITORY=`pwd | grep -o '\(serenity\)\|\(firefly\)'`
+echo $REPOSITORY
+
+ssh -t sniazi "quickdeploy $REPOSITORY"
