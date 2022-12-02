@@ -1,13 +1,24 @@
-if [[ $# -eq 0 ]]; then
-  NSS=$(kubens -c)
-else
-  NSS=""
-  while [[ $# -gt 0 ]]; do
-    NSS="${NSS} $1"
-    shift
-  done
-fi
+NSS=""
+while [[ $# -gt 0 ]]; do
+  NS=$1
+  NSS="${NSS}${NS} "
+  echo $NS
+  shift
+done
 
 echo $NSS
-
-watch -- "for NS in $NSS; do echo \$NS; kubectl get pod --namespace \$NS --sort-by=metadata.creationTimestamp ; echo ; done"
+watch -- "
+if [ -z \"$NSS\" ];
+  then NSLIST=\$(kubens -c)
+  else NSLIST=\"$NSS\";
+fi;
+for NS in \$NSLIST; do
+  if [ \"\$NS\" == \"\$(kubens -c)\" ]; then
+    echo \"==> \$NS <==\"
+  else
+    echo \"    \$NS    \"
+  fi;
+  kubectl get pod --namespace \$NS --sort-by=metadata.creationTimestamp;
+  echo
+done
+"
