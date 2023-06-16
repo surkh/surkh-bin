@@ -6,5 +6,7 @@ for i in {1..$total}; do
   remaining=$(repeat $(($total-$i)) printf "#")
   echo "$completed$remaining ${array[i]}"
   echo "${array[i]}" | pbcopy
-  read
+  if (( i != total )); then
+    read
+  fi
 done
