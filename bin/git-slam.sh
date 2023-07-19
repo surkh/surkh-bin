@@ -2,19 +2,26 @@
 
 # Function to display usage information
 usage() {
-    echo "Usage: $0 [branch_A] [branch_B]"
-    echo "Make branch_A identical to branch_B by adding a new commit."
+    echo "Usage: $0 [branch_B] [branch_A]"
+    echo "If only one argument is provided, it assumes that is the source branch (branch_B), and the current branch is used as the destination (branch_A)."
+    echo "If two arguments are provided, the first is the source branch (branch_B) and the second is the destination branch (branch_A)."
+    echo "This script creates a new commit on branch_A, making it identical to branch_B."
     exit 1
 }
 
-# Check that two arguments are provided
-if [ "$#" -ne 2 ]; then
+# Check the number of arguments
+if [ "$#" -lt 1 ] || [ "$#" -gt 2 ]; then
     usage
 fi
 
 # Assign command-line arguments to variables
-A="$1"
-B="$2"
+B="$1"
+if [ "$#" -eq 2 ]; then
+    A="$2"
+else
+    # Get the current branch name
+    A=$(git rev-parse --abbrev-ref HEAD)
+fi
 
 # Checkout to branch B
 git checkout "$B"
