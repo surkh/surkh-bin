@@ -2,11 +2,9 @@ NSS=""
 while [[ $# -gt 0 ]]; do
   NS=$1
   NSS="${NSS}${NS} "
-  echo $NS
   shift
 done
 
-echo $NSS
 watch -- "
 kctx -c
 if [ -z \"$NSS\" ];
