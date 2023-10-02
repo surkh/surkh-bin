@@ -8,6 +8,7 @@ done
 
 echo $NSS
 watch -- "
+kctx -c
 if [ -z \"$NSS\" ];
   then NSLIST=\$(kubens -c)
   else NSLIST=\"$NSS\";
