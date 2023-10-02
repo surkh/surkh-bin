@@ -7,10 +7,16 @@ done
 
 watch -- "
 kctx -c
-if [ -z \"$NSS\" ];
-  then NSLIST=\$(kubens -c)
-  else NSLIST=\"$NSS\";
+echo =================
+
+current_ns=\$(kubens -c)
+NSLIST=$NSS;
+
+# Check if $current_ns is NOT in $NSS
+if ! echo \"\$NSLIST\" | grep -qw \"\$current_ns\"; then
+  NSLIST=\" \$NSLIST \$current_ns \"
 fi;
+
 for NS in \$NSLIST; do
   if [ \"\$NS\" == \"\$(kubens -c)\" ]; then
     echo \"==> \$NS <==\"
