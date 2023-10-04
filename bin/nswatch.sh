@@ -1,8 +1,8 @@
-NSS=""
+# Collect namespaces from arguments into an array
+declare -a NSS
 while [[ $# -gt 0 ]]; do
-  NS=$1
-  NSS="${NSS}${NS} "
-  shift
+    NSS+=("$1")
+    shift
 done
 
 watch -- "
@@ -10,20 +10,22 @@ kctx -c
 echo =================
 
 current_ns=\$(kubens -c)
-NSLIST=$NSS;
 
-# Check if $current_ns is NOT in $NSS
-if ! echo \"\$NSLIST\" | grep -qw \"\$current_ns\"; then
-  NSLIST=\" \$NSLIST \$current_ns \"
-fi;
+# Create a copy of the NSS array
+declare -a NSLIST=(${NSS[@]})
 
-for NS in \$NSLIST; do
-  if [ \"\$NS\" == \"\$(kubens -c)\" ]; then
-    echo \"==> \$NS <==\"
-  else
-    echo \"    \$NS    \"
-  fi;
-  kubectl get pod --namespace \$NS --sort-by=metadata.creationTimestamp;
-  echo
+# Check if NSLIST is empty or if current_ns is NOT in NSLIST array
+if [[ \${#NSLIST[@]} -eq 0 ]] || [[ ! \" \${NSLIST[*]} \" =~ \" $current_ns \" ]]; then
+    NSLIST=(\"\$current_ns\" \"\${NSLIST[@]}\")
+fi
+
+for NS in \"\${NSLIST[@]}\"; do
+    if [ \"\$NS\" == \"\$current_ns\" ]; then
+        echo \"==> \$NS <==\"
+    else
+        echo \"    \$NS    \"
+    fi
+    kubectl get pod --namespace \$NS --sort-by=metadata.creationTimestamp
+    echo
 done
 "
