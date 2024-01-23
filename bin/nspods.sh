@@ -3,8 +3,8 @@
 # Collect namespaces from arguments into an array
 declare -a NSS=("$@")
 
-kctx -c
-echo "================="
+echo Context: "$(kubectl-ctx -c)"
+echo
 
 current_ns=$(kubens -c)
 
@@ -22,6 +22,6 @@ for NS in "${NSLIST[@]}"; do
     else
         echo "    $NS    "
     fi
-    kubectl get pod --namespace $NS --sort-by=metadata.creationTimestamp
+    kubectl get pod --namespace $NS --sort-by=metadata.creationTimestamp -o wide
     echo
 done
