@@ -7,7 +7,7 @@ compare_revision=${3}
 # Fetch and store the helm history once
 helm_history=$(helm history $release --output json)
 
-# Function to get updated date and revision number for a given revision
+# Function to get updated date for a given revision
 get_revision_info() {
   local rev=$1
   local revinfo=$(echo "$helm_history" | jq ".[] | select(.revision | . == $rev )")
@@ -36,7 +36,22 @@ first_revision_update=$(echo $first_revision_info | cut -d '|' -f2)
 second_revision=$(echo $second_revision_info | cut -d '|' -f1)
 second_revision_update=$(echo $second_revision_info | cut -d '|' -f2)
 
-echo "Comparing revision $first_revision (updated at $first_revision_update) with $second_revision (updated at $second_revision_update)"
+# Determine the order of revisions for diff
+if [ $first_revision -lt $second_revision ]; then
+  older_revision=$first_revision
+  newer_revision=$second_revision
+  older_revision_update=$first_revision_update
+  newer_revision_update=$second_revision_update
+else
+  older_revision=$second_revision
+  newer_revision=$first_revision
+  older_revision_update=$second_revision_update
+  newer_revision_update=$first_revision_update
+fi
+
+echo "Comparing
+revision $older_revision (updated at $older_revision_update)
+    with $newer_revision (updated at $newer_revision_update)"
 
 # Perform diff in the correct order
-diff <(helm get values $release --all --revision $first_revision) <(helm get values $release --all --revision $second_revision)
+diff <(helm get values $release --all --revision $older_revision) <(helm get values $release --all --revision $newer_revision)
