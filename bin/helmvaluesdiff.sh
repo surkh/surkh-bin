@@ -4,38 +4,39 @@ release=${1?please enter release name}
 revision=${2}
 compare_revision=${3}
 
-# Function to get updated date for a given revision
-get_updated_date() {
+# Fetch and store the helm history once
+helm_history=$(helm history $release --output json)
+
+# Function to get updated date and revision number for a given revision
+get_revision_info() {
   local rev=$1
-  local revinfo=$(helm history $release --output json | jq ".[] | select(.revision | . == $rev )")
-  echo $(echo $revinfo | jq '.updated')
+  local revinfo=$(echo "$helm_history" | jq ".[] | select(.revision | . == $rev )")
+  local updated=$(echo $revinfo | jq '.updated')
+  local revision=$(echo $revinfo | jq '.revision')
+  echo "$revision|$updated"
 }
 
+# Determine the current and previous revisions
 if [ -z "$revision" ]; then
-  latestrevisioninfo=$(helm history $release --output json | jq '.[length-1]')
-  revision=$(echo $latestrevisioninfo | jq '.revision')
+  latest_revision_info=$(echo "$helm_history" | jq '.[length-1]')
+  revision=$(echo $latest_revision_info | jq '.revision')
 fi
 
-# Set the previousrevision or use the specified compare_revision
 if [ -z "$compare_revision" ]; then
-  previousrevision=$(expr $revision - 1)
-else
-  previousrevision=$compare_revision
+  compare_revision=$(expr $revision - 1)
 fi
 
-# Determine the order of revisions for diff and get update dates
-if [ $previousrevision -lt $revision ]; then
-  firstrevision=$previousrevision
-  secondrevision=$revision
-else
-  firstrevision=$revision
-  secondrevision=$previousrevision
-fi
+# Get revision info for both revisions
+first_revision_info=$(get_revision_info $compare_revision)
+second_revision_info=$(get_revision_info $revision)
 
-firstrev_update=$(get_updated_date $firstrevision)
-secondrev_update=$(get_updated_date $secondrevision)
+# Extracting revision numbers and update dates
+first_revision=$(echo $first_revision_info | cut -d '|' -f1)
+first_revision_update=$(echo $first_revision_info | cut -d '|' -f2)
+second_revision=$(echo $second_revision_info | cut -d '|' -f1)
+second_revision_update=$(echo $second_revision_info | cut -d '|' -f2)
 
-echo "Comparing revision $firstrevision (updated at $firstrev_update) with $secondrevision (updated at $secondrev_update)"
+echo "Comparing revision $first_revision (updated at $first_revision_update) with $second_revision (updated at $second_revision_update)"
 
 # Perform diff in the correct order
-diff <(helm get values $release --all --revision $firstrevision) <(helm get values $release --all --revision $secondrevision)
+diff <(helm get values $release --all --revision $first_revision) <(helm get values $release --all --revision $second_revision)
